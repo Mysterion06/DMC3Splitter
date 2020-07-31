@@ -34,6 +34,20 @@ state("dmc3se")
 	int roomID : 0x2D3A74, 0x16C;		// Cuurrent Room ID
     int mainMenu : 0x188D72C;           // The main menu at the start
     int goldSelected : 0x76B158;        // Bool for whether gold orb is selected
+    int costumeSelected : 0x76B214;     // Dante/Vergil's current costume ID
+    int vHealth1 : 0x1A7B058;           // Vergil's health when using default costume/default with infinite dt
+    int vHealth2 : 0x1A67C58;           // with shirtless costume
+    int vHealth3 : 0x1A5BA58;           // with dmc1 costume
+    int vHealth4 : 0x1A4A658;           // with dmc2 costume
+    int vHealth5 : 0x1A5F658;           // with sparda/sparda with infinite dt
+    int dHealth1 : 0x1A33858;           // Dante's health when using default costume/default with infinite dt
+    int dHealth2 : 0x1A2B058;           // with shirtless costume
+    int dHealth3 : 0x1A0E858;           // with sparda/sparda with infinite dt
+    int bossHealthBar : 0x188CE84;      // Something to do with the boss health bar, not entirely sure, but it's consistent
+    /*
+        probably better to use a memory watcher function with the update state
+        instead of constantly monitoring every address, however for now this works
+    */
 }
 
 init
@@ -139,15 +153,19 @@ split
 			return true;
 		}
 	
-		// Split if we kill Vergil
- 		if(current.vergilBossHealth == 0 && old.vergilBossHealth > 1000000000 && current.roomID == 411 && current.level == 20){
- 			return true;
- 		}
- 	
- 		// Split if we kill Dante
- 		if(current.danteBossHealth == 0 && old.danteBossHealth > 1000000000 && current.roomID == 411 && current.level == 20){
- 			return true;
- 		}
+		// Split if the final boss is killed
+        if(current.roomID == 411 && current.level == 20 && current.bossHealthBar > 1000000){
+            switch((int)current.costumeSelected){
+                case 256: return (current.vHealth1 == 0 && old.vHealth1 > 100000000) || (current.dHealth1 == 0 && old.dHealth1 > 100000000);
+                case 262: return current.vHealth1 == 0 && old.vHealth1 > 100000000;
+                case 257: return (current.vHealth2 == 0 && old.vHealth2 > 100000000) || (current.dHealth2 == 0 && old.dHealth2 > 100000000);
+                case 258: return current.dHealth1 == 0 && old.dHealth1 > 100000000;
+                case 259: return (current.vHealth3 == 0 && old.vHealth3 > 100000000) || (current.dHealth3 == 0 && old.dHealth3 > 100000000);
+                case 260: return (current.vHealth4 == 0 && old.vHealth4 > 100000000) || (current.dHealth3 == 0 && old.dHealth3 > 100000000);
+                case 261: return current.vHealth5 == 0 && old.vHealth5 > 100000000;
+                case 263: return current.vHealth5 == 0 && old.vHealth5 > 100000000;
+            }
+        }
 	}
 
     if(settings["DS"]){
