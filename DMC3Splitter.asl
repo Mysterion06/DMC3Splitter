@@ -153,19 +153,6 @@ split
 			return true;
 		}
 	
-		// Split if the final boss is killed
-        if(current.roomID == 411 && current.level == 20 && current.bossHealthBar > 1000000){
-            switch((int)current.costumeSelected){
-                case 256: return (current.vHealth1 == 0 && old.vHealth1 > 100000000) || (current.dHealth1 == 0 && old.dHealth1 > 100000000);
-                case 262: return current.vHealth1 == 0 && old.vHealth1 > 100000000;
-                case 257: return (current.vHealth2 == 0 && old.vHealth2 > 100000000) || (current.dHealth2 == 0 && old.dHealth2 > 100000000);
-                case 258: return current.dHealth1 == 0 && old.dHealth1 > 100000000;
-                case 259: return (current.vHealth3 == 0 && old.vHealth3 > 100000000) || (current.dHealth3 == 0 && old.dHealth3 > 100000000);
-                case 260: return (current.vHealth4 == 0 && old.vHealth4 > 100000000) || (current.dHealth3 == 0 && old.dHealth3 > 100000000);
-                case 261: return current.vHealth5 == 0 && old.vHealth5 > 100000000;
-                case 263: return current.vHealth5 == 0 && old.vHealth5 > 100000000;
-            }
-        }
 	}
 
     if(settings["DS"]){
