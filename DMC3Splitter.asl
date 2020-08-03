@@ -926,7 +926,7 @@ isLoading
     
 	// Loadremover for door loads and menu for HD
 	if(settings["HD"] && settings["LoadRemover"]){
-		if(current.LS == 1 || current.loadingScreenHD == 72){
+		if(current.LS == 1){
 			return true;
 		}
 		else{
@@ -937,7 +937,7 @@ isLoading
 	
 	// Loadremover for door loads and menu for SE
 	if(settings["SE"] && settings["LoadRemover"]){
-		if(current.loadingScreen == 1 || current.gameState == 1){
+		if(current.gameState == 1){
 			return true;
 		}
 		else{
