@@ -132,12 +132,6 @@ split
 		if(current.levelHD > old.levelHD && vars.bulletSplit == 0){
 			return true;
 		}
-	
-		// Split if we kill the final boss
- 		if((current.finalBossHealthHD < 1000000000 && old.finalBossHealthHD > 1000000000 && current.levelHD == 20) ||
- 		   (current.finalBossHealthHD == 3212836864 && old.finalBossHealthHD > 1000000000 && current.levelHD == 20)){
- 			return true;
- 		}
 	}
 	
 	// Settings for DMC3SE
