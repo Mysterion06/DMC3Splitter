@@ -44,6 +44,7 @@ state("dmc3se")
     int dHealth2 : 0x1A2B058;           // with shirtless costume
     int dHealth3 : 0x1A0E858;           // with sparda/sparda with infinite dt
     int bossHealthBar : 0x188CE84;      // Something to do with the boss health bar, not entirely sure, but it's consistent
+    int resetNGPlus : 0x188EDC8;
     /*
         probably better to use a memory watcher function with the update state
         instead of constantly monitoring every address, however for now this works
@@ -910,7 +911,9 @@ split
 
 reset
 {
-    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.gold == 0 || settings["SE"] && (current.mainMenu == 1 || current.mainMenu == 16777217) && current.goldSelected == 0)){
+    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.gold == 0 || settings["SE"] && (current.mainMenu == 1 || current.mainMenu == 16777217) && current.goldSelected == 0)
+    ||
+    (current.resetNGPlus > 0 && current.resetNGPlus < 4000000000 && old.resetNGPlus == 0 && settings["SE"])){
         return true;
     }
 }
