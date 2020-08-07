@@ -911,7 +911,7 @@ split
 
 reset
 {
-    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.NGStartHD == 4 || settings["SE"] && (current.resetNGPlus == 127 && old.resetNGPlus > 0 && current.NGStart == 0) || settings["SE"] && (current.resetNGPlus > 20935536 && current.resetNGPlus < 4000000000 && old.resetNGPlus == 0))){
+    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.NGStartHD == 4 || settings["SE"] && (current.resetNGPlus == 127 && old.resetNGPlus > 0 && current.NGStart == 0)){
         return true;
     }
 }
