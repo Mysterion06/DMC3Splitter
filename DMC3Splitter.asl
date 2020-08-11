@@ -88,12 +88,14 @@ start
 		// Settings for New Game Start
 		if(current.NGStartHD == 5 && old.NGStartHD == 4 && current.levelHD == 1 && current.falseStartHD != 1 && current.mainMenuHD != 0){
 			vars.bulletSplit = 0;
+			vars.split = 0;
 			return true;
 		}
 		
 		// Settings for New Game+ Start
 		if(current.plusStartHD == 344 && old.plusStartHD == 272 && current.mainMenuHD != 650 && current.menuTransitionHD != 37476){
 			vars.bulletSplit = 0;
+			vars.split = 0;
 			return true;
 		}
 	}
@@ -314,10 +316,10 @@ split
         ||
         (current.roomID == 209 && old.roomID == 206 && vars.split == 70)
         ||
-        (current.roomID == 210 && old.roomID == 209 && current.level == 9 && vars.split == 71)
+        (current.roomID == 210 && old.roomID == 209 && current.levelHD == 9 && vars.split == 71)
         ||
         //Chapter 10
-        (current.roomID == 210 && old.roomID == 209 && current.level == 10 && vars.split == 72)
+        (current.roomID == 210 && old.roomID == 209 && current.levelHD == 10 && vars.split == 72)
         ||
         (current.roomID == 209 && old.roomID == 210 && vars.split == 73)
         ||
