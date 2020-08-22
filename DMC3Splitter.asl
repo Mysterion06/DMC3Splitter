@@ -392,7 +392,7 @@ split
 reset
 {
     // The resetters for HD/SE
-    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.NGStartHD == 4 
+    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.NGStartHD == 4) 
     || 
     (settings["NG+"] && current.resetNGPlus == 37 && current.plusStart == 0 && current.NGStart == 0)
     ||
