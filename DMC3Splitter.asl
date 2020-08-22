@@ -292,7 +292,6 @@ startup
     settings.CurrentDefaultParent = "version";
     settings.Add("HD", true, "HD");
     settings.CurrentDefaultParent = "HD";
-    settings.Add("NG+HD", false, "NG+HD");
     settings.Add("DS", false, "DoorSplitter");
     settings.SetToolTip("HD", "Check this option if you are running the HD Collection version of DMC3");
     
@@ -393,9 +392,11 @@ split
 reset
 {
     // The resetters for HD/SE
-    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.NGStartHD == 4 || settings["NG+"] && current.resetNGPlus == 37 && current.plusStart == 0 && current.NGStart == 0)
+    if((settings["HD"] && (current.menuHD == 1 || current.menuHD == 16777217) && current.NGStartHD == 4 
+    || 
+    (settings["NG+"] && current.resetNGPlus == 37 && current.plusStart == 0 && current.NGStart == 0)
     ||
-    (settings["SE"] && current.resetNG == 127 && current.resetNG > 0 && current.NGStart == 0 || settings["NG+HD"] && current.ngPlusReset == 131 && current.plusStartHD == 272)){
+    (settings["SE"] && current.resetNG == 127 && current.resetNG > 0 && current.NGStart == 0)){
         return true;
     }
 }
