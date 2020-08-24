@@ -371,6 +371,7 @@ startup
     settings.CurrentDefaultParent = "HD";
     settings.Add("NG+HD", false, "NG+HD");
     settings.SetToolTip("HD", "Check this option if you are running the HD Collection version of DMC3");
+    settings.SetToolTip("NG+HD", "Resets at the difficulty selection screen instead of the main menu. Only use for NG+");
     
     // SE
     settings.CurrentDefaultParent = "version";
@@ -378,6 +379,7 @@ startup
     settings.CurrentDefaultParent = "SE";
     settings.Add("NG+", false, "NG+");
     settings.SetToolTip("SE", "Check this option if you are running the Special Edition version of DMC3");
+    settings.SetToolTip("NG+", "Resets at the difficulty selection screen instead of the main menu. Only use for NG+");
     
     // Options
     settings.CurrentDefaultParent = null;
