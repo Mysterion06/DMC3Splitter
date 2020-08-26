@@ -14,12 +14,12 @@ state("dmc3")
     int isLoading:           0xCEF8E0;                                                   // The game state, 0 normally, 1 when paused/entering new rooms
     int menuHD:              0xCF2680, 0xD8, 0x110, 0xC0, 0x2F8, 0xD0;                   // When in the main menu
     int ngPlusReset:         0xC90E50, 0xD4;                                             // Used to reset for NG+
-    int bossHealth:          0xCF2750, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Boss health value for M20
-    int bossHealthBar:       0xD544D0, 0x2A8, 0x2F8, 0x100, 0x38, 0x424;                 // Something to do with the boss health bar, not entirely sure, but it's consistent
+    int bossHealth1:         0xCF2750, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Boss health value for M20
+    int bossHealth2:         0xC90FC0, 0x160, 0x1F0, 0x348, 0x50, 0x260, 0x300, 0xC0;    // Another possible value
+    int bossHealth3:         0xCF2550, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Another possible value
+    int bossHealth4:         0xC90FC0, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Another. A memory watcher function would be better.
+    int bossHealthBar:       0xCF2548, 0x280, 0x80, 0x2F8, 0x18, 0x508, 0x4C0, 0x4E4;    // Consistent ingame value when in a mission (1677722625)
     int NGStartGY:           0xD6E000;                                                   // Detects when gold/yellow is selected for NG
-    // possible other health addresses
-    // int bossHealth:          0xC90FC0, 0x160, 0x1F0, 0x348, 0x50, 0x260, 0x300, 0xC0;
-    // int bossHealth:          0xCF2550, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;
 }
 
 state("dmc3se")
@@ -31,7 +31,7 @@ state("dmc3se")
     int plusStart:           0x188EDB4;           // New Game+ start on mission select
     int roomID:              0x2D3A74, 0x16C;     // Current Room ID
     int bossHealth:          0x205CFC8, 0x658;    // Boss health value for M20
-    int bossHealthBar:       0x188CE84;           // Something to do with the boss health bar, not entirely sure, but it's consistent                        
+    int bossHealthBar:       0x188CE84;           // Consistent ingame value when in a mission (1677722625)                       
     int resetNGPlus:         0x76EB30;            // Used to reset when in Chapter/difficulty selection
     int resetNG:             0x188EDC8;           // Used to reset for NG
 }
@@ -88,10 +88,17 @@ split
         return true;
     
     // Final split for when Vante/Dante is killed on M20
-    if(current.roomID == 411 && current.level == 20 && current.bossHealthBar > 10000)
-        return current.bossHealth == 0 && old.bossHealth > 0;
+    if(current.roomID == 411 && current.level == 20 && current.bossHealthBar > 10000){
+        if(settings["SE"])
+            return current.bossHealth == 0 && old.bossHealth > 0;
+        if(settings["HD"])
+            return (current.bossHealth1 == 0 && old.bossHealth1 > 0) ||
+                (current.bossHealth2 == 0 && old.bossHealth2 > 0) ||
+                (current.bossHealth3 == 0 && old.bossHealth3 > 0) ||
+                (current.bossHealth4 == 0 && old.bossHealth4 > 0);
+    }
 
-    // Split if the new room entered is found in the list of tuples above
+    // Split if the new room entered is found in the list of tuples below
     if(settings["DS"] && vars.doorSplit.Contains(Tuple.Create(current.roomID, old.roomID, current.level, vars.split))){
         vars.split++;
         return true;
@@ -380,7 +387,7 @@ startup
     settings.Add("NG+", false, "NG+");
     settings.SetToolTip("SE", "Check this option if you are running the Special Edition version of DMC3");
     settings.SetToolTip("NG+", "Resets at the difficulty selection screen instead of the main menu. Only use for NG+");
-    
+
     // Options
     settings.CurrentDefaultParent = null;
     settings.Add("options", true, "Options");
