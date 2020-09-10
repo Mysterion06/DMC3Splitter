@@ -14,12 +14,8 @@ state("dmc3")
     int isLoading:           0xCEF8E0;                                                   // The game state, 0 normally, 1 when paused/entering new rooms
     int menuHD:              0xCF2680, 0xD8, 0x110, 0xC0, 0x2F8, 0xD0;                   // When in the main menu
     int ngPlusReset:         0xC90E50, 0xD4;                                             // Used to reset for NG+
-    int bossHealth1:         0xCF2750, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Boss health value for M20
-    int bossHealth2:         0xC90FC0, 0x160, 0x1F0, 0x348, 0x50, 0x260, 0x300, 0xC0;    // Another possible value
-    int bossHealth3:         0xCF2550, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Another possible value
-    int bossHealth4:         0xC90FC0, 0xD50, 0x80, 0x80, 0x730, 0x568, 0xA90, 0xFC4;    // Another. A memory watcher function would be better.
-    int bossHealthBar:       0xCF2548, 0x280, 0x80, 0x2F8, 0x18, 0x508, 0x4C0, 0x4E4;    // Consistent ingame value when in a mission (1677722625)
     int NGStartGY:           0xD6E000;                                                   // Detects when gold/yellow is selected for NG
+    int killCount:           0xC90DF8, 0x110;                                             // In game kill counter
 }
 
 state("dmc3se")
@@ -29,11 +25,10 @@ state("dmc3se")
     int isLoading:           0x205BCB8;           // The game state, 0 normally, 1 when paused/entering new rooms
     int NGStart:             0x70D2DC;            // New Game start after hitting Gold on the menu
     int plusStart:           0x188EDB4;           // New Game+ start on mission select
-    int roomID:              0x2D3A74, 0x16C;     // Current Room ID
-    int bossHealth:          0x205CFC8, 0x658;    // Boss health value for M20
-    int bossHealthBar:       0x188CE84;           // Consistent ingame value when in a mission (1677722625)                       
+    int roomID:              0x2D3A74, 0x16C;     // Current Room ID               
     int resetNGPlus:         0x76EB30;            // Used to reset when in Chapter/difficulty selection
     int resetNG:             0x188EDC8;           // Used to reset for NG
+    int killCount:           0x838B0C;            // In game kill counter
 }
 
 start
@@ -46,6 +41,7 @@ start
         if(current.NGStartGY == 44100 && old.NGStartGY == 22050 && current.level == 1){
             vars.bulletSplit = 0;
             vars.split = 0;
+            vars.killCount = 0;
             return true;
         }
         
@@ -53,6 +49,7 @@ start
         if(current.plusStartHD == 344 && old.plusStartHD == 272 && current.mainMenuHD == 0 && current.menuTransitionHD != 37476 && current.level == 1){
             vars.bulletSplit = 0;
             vars.split = 0;
+            vars.killCount = 0;
             return true;
         }
     }
@@ -62,6 +59,7 @@ start
         if(current.NGStart == 7 && old.NGStart == 0 && current.level == 1){
             vars.bulletSplit = 0;
             vars.split = 0;
+            vars.killCount = 0;
             return true;
         }
 
@@ -69,6 +67,7 @@ start
         if(current.plusStart == 1 && old.plusStart == 0){
             vars.bulletSplit = 0;
             vars.split = 0;
+            vars.killCount = 0;
             return true;
         }
     }
@@ -88,15 +87,8 @@ split
         return true;
     
     // Final split for when Vante/Dante is killed on M20
-    if(current.roomID == 411 && current.level == 20 && current.bossHealthBar > 10000){
-        if(settings["SE"])
-            return current.bossHealth == 0 && old.bossHealth > 0;
-        if(settings["HD"])
-            return (current.bossHealth1 == 0 && old.bossHealth1 > 0) ||
-                (current.bossHealth2 == 0 && old.bossHealth2 > 0) ||
-                (current.bossHealth3 == 0 && old.bossHealth3 > 0) ||
-                (current.bossHealth4 == 0 && old.bossHealth4 > 0);
-    }
+    if(current.roomID == 411 && current.level == 20)
+        return current.killCount == 1 && old.killCount == 0;
 
     // Split if the new room entered is found in the list of tuples below
     if(settings["DS"] && vars.doorSplit.Contains(Tuple.Create(current.roomID, old.roomID, current.level, vars.split))){
@@ -126,10 +118,18 @@ isLoading
         return current.isLoading == 1;
 }
 
+update
+{
+    // Displays kill counter in livesplit
+    if(settings["KC"] && current.killCount > old.killCount && current.killCount < 127)
+        vars.killCount = vars.killCount + (current.killCount - old.killCount);
+}
+
 init
 {
     vars.bulletSplit = 0;
     vars.split = 0;
+    vars.killCount = 0;
 
     // List of tuples for the doorsplit logic
     // tuples are comprised of current.roomID, old.roomID, current.level, vars.split
@@ -396,4 +396,6 @@ startup
     settings.SetToolTip("LoadRemover", "Check this option if you want to use the Load Remover feature");
     settings.Add("DS", false, "Door Splitter");
     settings.SetToolTip("DS", "Check this option if you want to use the Door Splits feautre");
+    settings.Add("KC", false, "Kill Counter");
+    settings.SetToolTip("KC", "Display total kills in livesplit. It requires Livesplit.ASLVarViewer (in the main github)");
 }
