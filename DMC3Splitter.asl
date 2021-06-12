@@ -15,7 +15,7 @@ state("dmc3")
     int menuHD:              0xCF2680, 0xD8, 0x110, 0xC0, 0x2F8, 0xD0;                   // When in the main menu
     int ngPlusReset:         0xC90E50, 0xD4;                                             // Used to reset for NG+
     int NGStartGY:           0xD6E000;                                                   // Detects when gold/yellow is selected for NG
-    int killCount:           0xC90DF8, 0x110;                                             // In game kill counter
+    int killCount:           0xC90DF8, 0x110;                                            // In game kill counter
 }
 
 state("dmc3se")
@@ -42,6 +42,7 @@ start
             vars.bulletSplit = 0;
             vars.split = 0;
             vars.killCount = 0;
+            vars.gigazip = 0;
             return true;
         }
         
@@ -50,6 +51,7 @@ start
             vars.bulletSplit = 0;
             vars.split = 0;
             vars.killCount = 0;
+            vars.gigazip = 0;
             return true;
         }
     }
@@ -60,6 +62,7 @@ start
             vars.bulletSplit = 0;
             vars.split = 0;
             vars.killCount = 0;
+            vars.gigazip = 0;
             return true;
         }
 
@@ -68,6 +71,7 @@ start
             vars.bulletSplit = 0;
             vars.split = 0;
             vars.killCount = 0;
+            vars.gigazip = 0;
             return true;
         }
     }
@@ -79,6 +83,17 @@ split
     // Split if a bulletscreen is active
     if(current.bulletScreen != 0 && old.bulletScreen == 0){
         vars.bulletSplit = 1;
+        // Sets variables for multiple splits if you got gigazip and use doorsplits
+        if(settings["DS"] && vars.split == 8){
+            vars.split = 14;
+            vars.gigazip = 6;
+        }
+        return true;
+    }
+
+    // Splits multiple times if you get the gigazip and use doorsplits
+    if(vars.gigazip > 0){
+        vars.gigazip--;
         return true;
     }
 
@@ -129,6 +144,7 @@ init
 {
     vars.bulletSplit = 0;
     vars.split = 0;
+    vars.gigazip = 0;
     vars.killCount = 0;
 
     // List of tuples for the doorsplit logic
