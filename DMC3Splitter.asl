@@ -39,19 +39,13 @@ start
     if(settings["HD"]){
         // NG
         if(current.NGStartGY == 44100 && old.NGStartGY == 22050 && current.level == 1){
-            vars.bulletSplit = 0;
-            vars.split = 0;
-            vars.killCount = 0;
-            vars.gigazip = 0;
+            vars.ClearASLVariables();
             return true;
         }
         
         // NG+
         if(current.plusStartHD == 344 && old.plusStartHD == 272 && current.mainMenuHD == 0 && current.menuTransitionHD != 37476 && current.level == 1){
-            vars.bulletSplit = 0;
-            vars.split = 0;
-            vars.killCount = 0;
-            vars.gigazip = 0;
+            vars.ClearASLVariables();
             return true;
         }
     }
@@ -59,22 +53,18 @@ start
     if(settings["SE"]){
         // NG
         if(current.NGStart == 7 && old.NGStart == 0 && current.level == 1){
-            vars.bulletSplit = 0;
-            vars.split = 0;
-            vars.killCount = 0;
-            vars.gigazip = 0;
+            vars.ClearASLVariables();
             return true;
         }
 
         // NG+
         if(current.plusStart == 1 && old.plusStart == 0){
-            vars.bulletSplit = 0;
-            vars.split = 0;
-            vars.killCount = 0;
-            vars.gigazip = 0;
+            vars.ClearASLVariables();
             return true;
         }
     }
+
+    return false;
 }
 
 
@@ -110,6 +100,8 @@ split
         vars.split++;
         return true;
     }
+
+    return false;
 }
 
 reset
@@ -123,6 +115,8 @@ reset
         if(current.resetNG == 127 && current.resetNG > 0 && current.NGStart == 0) return true;
         if(settings["NG+"] && current.resetNGPlus == 37 && current.plusStart == 0 && current.NGStart == 0) return true;
     }
+
+    return false;
 }
 
 isLoading
@@ -136,16 +130,45 @@ isLoading
 update
 {
     // Displays kill counter in livesplit
-    if(settings["KC"] && current.killCount > old.killCount && current.killCount < 127)
+    if(settings["KC"] && current.killCount > old.killCount && current.killCount < 127){
         vars.killCount = vars.killCount + (current.killCount - old.killCount);
+    }
+
+    // Corrects the split index for doorsplits when doing ILs/segments
+    if(settings["DS"] && vars.split == 0 && current.level != 1){
+        switch((int)current.level){
+            case 4: vars.split = 4; break;
+            case 5: vars.split = 14; break;
+            case 6: vars.split = 26; break;
+            case 7: vars.split = 33; break;
+            case 8: vars.split = 51; break;
+            case 9: vars.split = 61; break;
+            case 10: vars.split = 72; break;
+            case 11: vars.split = 81; break;
+            case 12: vars.split = 87; break;
+            case 13: vars.split = 97; break;
+            case 14: vars.split = 103; break;
+            case 15: vars.split = 116; break;
+            case 16: vars.split = 132; break;
+            case 17: vars.split = 149; break;
+            case 18: vars.split = 159; break;
+            case 19: vars.split = 168; break;
+            default: break;
+        }
+    }
 }
 
 init
 {
-    vars.bulletSplit = 0;
-    vars.split = 0;
-    vars.gigazip = 0;
-    vars.killCount = 0;
+    // Reset variables
+    Action ClearASLVariables = delegate(){
+        vars.bulletSplit = 0;
+        vars.split = 0;
+        vars.gigazip = 0;
+        vars.killCount = 0;
+    };
+    ClearASLVariables();
+    vars.ClearASLVariables = ClearASLVariables;
 
     // List of tuples for the doorsplit logic
     // tuples are comprised of current.roomID, old.roomID, current.level, vars.split
