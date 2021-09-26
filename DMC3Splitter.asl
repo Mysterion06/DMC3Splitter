@@ -2,6 +2,7 @@
 /******************************* Credits: Mysterion_06_ & Hies *********************************************/
 /***************** Devil May Cry 3: Special Editon / HD Collection - Full Game Timer **********************/
 
+// HDC
 state("dmc3")
 {
     int bulletScreen:        0xCF2718;                                                   // Bullet screens at the end of missions
@@ -16,8 +17,10 @@ state("dmc3")
     int ngPlusReset:         0xC90E50, 0xD4;                                             // Used to reset for NG+
     int NGStartGY:           0xD6E000;                                                   // Detects when gold/yellow is selected for NG
     int killCount:           0xC90DF8, 0x110;                                            // In game kill counter
+    int frameCount:          0xC90E30, 0xA8;                                             // Used to calculate mission time for ILs
 }
 
+// SE
 state("dmc3se")
 {
     int bulletScreen:        0x205CF14;           // Bullet screens at the end of missions
@@ -29,6 +32,7 @@ state("dmc3se")
     int resetNGPlus:         0x76EB30;            // Used to reset when in Chapter/difficulty selection
     int resetNG:             0x188EDC8;           // Used to reset for NG
     int killCount:           0x838B0C;            // In game kill counter
+    int frameCount:          0x838AFC;            // Used to calculate mission time for ILs
 }
 
 start
@@ -67,23 +71,24 @@ start
     return false;
 }
 
+// Sets the game time to the mission timer on the result screen
+gameTime {
+    if(settings["IL"]) return TimeSpan.FromSeconds(current.frameCount / 60);
+}
+
 
 split
 {
     // Split if a bulletscreen is active
     if(current.bulletScreen != 0 && old.bulletScreen == 0){
         vars.bulletSplit = 1;
-        // Sets variables for multiple splits if you got gigazip and use doorsplits
+        // Skips the next 6 splits if you use doorsplits and got gigazip
         if(settings["DS"] && vars.split == 8){
+            for(vars.gigazip = 6; vars.gigazip > 0; vars.gigazip--){
+                vars.timerModel.SkipSplit();
+            }
             vars.split = 14;
-            vars.gigazip = 6;
         }
-        return true;
-    }
-
-    // Splits multiple times if you get the gigazip and use doorsplits
-    if(vars.gigazip > 0){
-        vars.gigazip--;
         return true;
     }
 
@@ -162,6 +167,7 @@ init
 {
     // Reset variables
     Action ClearASLVariables = delegate(){
+        if(settings["IL"]) refreshRate = 4;
         vars.bulletSplit = 0;
         vars.split = 0;
         vars.gigazip = 0;
@@ -407,6 +413,9 @@ init
 
 startup
 {
+    // Add timermodel var for skipping/undoing splits (useful for gigazip on doorsplits)
+    vars.timerModel = new TimerModel { CurrentState = timer };
+
     // Version
     settings.Add("version", true, "Version");
     settings.SetToolTip("version", "Do not uncheck this box");
@@ -437,4 +446,6 @@ startup
     settings.SetToolTip("DS", "Check this option if you want to use the Door Splits feautre");
     settings.Add("KC", false, "Kill Counter");
     settings.SetToolTip("KC", "Display total kills in livesplit. It requires Livesplit.ASLVarViewer (in the main github)");
+    settings.Add("IL", false, "Individual Levels");
+    settings.SetToolTip("IL", "Sets the Game Time to the result screen mission timer for Individual Level runs");
 }
