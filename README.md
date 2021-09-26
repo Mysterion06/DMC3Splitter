@@ -12,6 +12,9 @@ A Devil May Cry 3 SE/HDC Autosplitter
 
 [Click here to download the autosplitter and some pre-generated door/chapter splits](https://github.com/Mysterion06/DMC3Splitter/releases/download/v1.0/dmc3autosplitter.zip)
 
+You can use this tool to generate splits for segments automatically: https://github.com/644/dmc3lss
+
+## Configuration
 Make sure to select the correct settings under the livesplit edit layout section in the "Scriptable autosplitter" settings.
 
 For configuring the doorsplits as subsplits, download the above "doorsplits-subsplits.lss" file, and open it with Livesplit. Then in the Livesplit "Edit Layout" section, remove the "Splits" plugin by highlighting it and pressing the <kbd>-</kbd> icon, then add the "Subsplits" plugin by clicking the <kbd>+</kbd> icon > List > Subsplits. All 195 splits are prenamed.
