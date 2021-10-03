@@ -73,7 +73,7 @@ start
 
 // Sets the game time to the mission timer on the result screen
 gameTime {
-    if(settings["IL"]) return TimeSpan.FromSeconds(current.frameCount / 60);
+    if(settings["IL"]) return TimeSpan.FromSeconds((float)current.frameCount / 60.0);
 }
 
 
@@ -128,7 +128,7 @@ isLoading
 {
     // The load removers for HD/SE
     // Removes loads when entering doors and in the pause menu
-    if((settings["HD"] || settings["SE"]) && settings["LoadRemover"])
+    if((settings["HD"] || settings["SE"]) && settings["LoadRemover"] && !settings["IL"])
         return current.isLoading == 1;
 }
 
@@ -167,7 +167,7 @@ init
 {
     // Reset variables
     Action ClearASLVariables = delegate(){
-        if(settings["IL"]) refreshRate = 4;
+        //if(settings["IL"]) refreshRate = 4;
         vars.bulletSplit = 0;
         vars.split = 0;
         vars.gigazip = 0;
